@@ -5,21 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rock Paper Scissors</title>
     <style>
+        /* General Styling */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             text-align: center;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
+            background: linear-gradient(to right, #6dd5ed, #2193b0);
+            color: #fff;
         }
         h1 {
-            margin-top: 20px;
-        }
-        #result {
-            font-size: 24px;
             margin: 20px 0;
-            color: #333;
+            font-size: 2.5rem;
         }
+        p {
+            font-size: 1.2rem;
+        }
+
+        /* Choices Styling */
         #choices {
             display: flex;
             justify-content: center;
@@ -28,48 +31,112 @@
         }
         .choice {
             cursor: pointer;
-            padding: 10px 20px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            font-size: 20px;
-            background-color: #fff;
-            transition: all 0.3s;
+            padding: 20px 30px;
+            font-size: 1.5rem;
+            border: 3px solid #fff;
+            border-radius: 10px;
+            background: #2193b0;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease-in-out;
         }
         .choice:hover {
-            background-color: #e0e0e0;
-            border-color: #888;
+            background: #6dd5ed;
+            transform: scale(1.1);
+        }
+
+        /* Scoreboard Styling */
+        #scoreboard {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .score {
+            margin: 0 50px;
+            font-size: 1.5rem;
+        }
+
+        /* Result Styling */
+        #result {
+            font-size: 1.8rem;
+            margin: 30px 0;
+            font-weight: bold;
+        }
+
+        /* Reset Button */
+        #reset {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            border: none;
+            background: #ff6b6b;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        #reset:hover {
+            background: #f94c4c;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #choices {
+                flex-direction: column;
+            }
+            .choice {
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <h1>Rock Paper Scissors</h1>
-    <p>Click on your choice:</p>
-    <div id="choices">
-        <div class="choice" id="rock">Rock</div>
-        <div class="choice" id="paper">Paper</div>
-        <div class="choice" id="scissors">Scissors</div>
+    <p>Best of 5! Make your move:</p>
+
+    <!-- Scoreboard -->
+    <div id="scoreboard">
+        <div class="score">Player: <span id="playerScore">0</span></div>
+        <div class="score">Computer: <span id="computerScore">0</span></div>
     </div>
+
+    <!-- Choices -->
+    <div id="choices">
+        <div class="choice" id="rock">🪨 Rock</div>
+        <div class="choice" id="paper">📄 Paper</div>
+        <div class="choice" id="scissors">✂️ Scissors</div>
+    </div>
+
+    <!-- Result -->
     <div id="result"></div>
 
-    <!-- JavaScript -->
+    <!-- Reset Button -->
+    <button id="reset">Reset Game</button>
+
+    <!-- Script -->
     <script>
         const choices = ["rock", "paper", "scissors"];
+        let playerScore = 0;
+        let computerScore = 0;
+
+        const playerScoreDisplay = document.getElementById("playerScore");
+        const computerScoreDisplay = document.getElementById("computerScore");
+        const resultDisplay = document.getElementById("result");
 
         function computerChoice() {
-            const randomIndex = Math.floor(Math.random() * choices.length);
-            return choices[randomIndex];
+            return choices[Math.floor(Math.random() * choices.length)];
         }
 
         function determineWinner(playerChoice, computerChoice) {
-            if (playerChoice === computerChoice) {
-                return "It's a tie!";
-            } else if (
+            if (playerChoice === computerChoice) return "It's a tie!";
+            if (
                 (playerChoice === "rock" && computerChoice === "scissors") ||
                 (playerChoice === "paper" && computerChoice === "rock") ||
                 (playerChoice === "scissors" && computerChoice === "paper")
             ) {
+                playerScore++;
                 return "You win!";
             } else {
+                computerScore++;
                 return "Computer wins!";
             }
         }
@@ -77,15 +144,36 @@
         function playGame(playerChoice) {
             const computer = computerChoice();
             const result = determineWinner(playerChoice, computer);
-            document.getElementById("result").innerHTML = `You chose ${playerChoice}, computer chose ${computer}. ${result}`;
+
+            resultDisplay.innerHTML = `You chose <b>${playerChoice}</b>, computer chose <b>${computer}</b>. ${result}`;
+            playerScoreDisplay.textContent = playerScore;
+            computerScoreDisplay.textContent = computerScore;
+
+            checkGameOver();
         }
 
+        function checkGameOver() {
+            if (playerScore === 3 || computerScore === 3) {
+                const finalMessage = playerScore === 3 ? "🎉 You won the game!" : "😢 Computer won the game!";
+                resultDisplay.innerHTML = finalMessage;
+                document.querySelectorAll(".choice").forEach(choice => choice.style.pointerEvents = "none");
+            }
+        }
+
+        function resetGame() {
+            playerScore = 0;
+            computerScore = 0;
+            playerScoreDisplay.textContent = playerScore;
+            computerScoreDisplay.textContent = computerScore;
+            resultDisplay.innerHTML = "";
+            document.querySelectorAll(".choice").forEach(choice => choice.style.pointerEvents = "auto");
+        }
+
+        // Event Listeners
         document.getElementById("rock").addEventListener("click", () => playGame("rock"));
         document.getElementById("paper").addEventListener("click", () => playGame("paper"));
         document.getElementById("scissors").addEventListener("click", () => playGame("scissors"));
+        document.getElementById("reset").addEventListener("click", resetGame);
     </script>
 </body>
 </html>
-
-
-   
